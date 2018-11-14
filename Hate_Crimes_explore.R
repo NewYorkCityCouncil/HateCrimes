@@ -20,9 +20,12 @@ motivations <- quarters[inds]
 motlist <- lapply(motivations, read_excel_allsheets)
 
 # motlist2 <- makeNamedList(motlist)
+sheets <- list()
+
 for(i in 1:length(motivations)){
+name <- motivations[i]
 wb <- loadWorkbook(motivations[i])
-sheets <- getSheets(wb) 
+sheets[[name]] <- length(getSheets(wb)) 
 }
 
 for(i in 1:6){
