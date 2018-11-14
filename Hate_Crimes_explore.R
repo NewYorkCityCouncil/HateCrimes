@@ -17,20 +17,39 @@ quarters <- complaintfiles[grep("-q", complaintfiles)]
 # let's look at complaints by motivation 
 inds <- grep("by-motivation", quarters)
 motivations <- quarters[inds]
-motlist <- lapply(motivations, read_excel_allsheets)
+
+# motlist <- lapply(motivations, read_excel_allsheets)
 
 # motlist2 <- makeNamedList(motlist)
 sheets <- list()
+lendocs <- c()
 
 for(i in 1:length(motivations)){
 name <- motivations[i]
 wb <- loadWorkbook(motivations[i])
-sheets[[name]] <- length(getSheets(wb)) 
+x <- getSheets(wb)
+sheets[[name]] <- x 
+lendocs[i] <- length(x)
 }
 
-for(i in 1:6){
-  motlist[[i]] <- readLines()
-  
+# read in the last sheet based on sheets name 
+crimedat <- list()
+
+for(i in 1:length(motivations)){
+  x <- read_excel(motivations[i], sheet = lendocs[i])
+  setDT(x)
+  x[,Q.Yr:= as.vector(rep(x[2,1], nrow(x)))]
+  x <- x[-(1:3), ]
+  names(x) <- as.character(x[1, ])
+  crimedat[[i]] <- as.data.table(x)
 }
+
+
+rbindlist(crimedat, fill= TRUE)
+
+## read in arrests 
+
+
+
 
 ### arrests 
